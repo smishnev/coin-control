@@ -1,0 +1,17 @@
+:root {
+  --color-primary: #5d87ff;        
+  --color-secondary: #49beff;      
+  --color-background: #f6f9fc;      
+  --color-foreground: #2a3547;      
+  --color-menu: #fff;               
+  --color-menu-active: #e6f2ff;     
+}
+
+.dark {
+  --color-primary: #5d87ff;
+  --color-secondary: #49beff;
+  --color-background: #111936;      
+  --color-foreground: #f6f9fc;      
+  --color-menu: #20294d;            
+  --color-menu-active: #23304e;     
+}

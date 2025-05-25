@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom styles for the application */
+body {
+  @apply bg-gray-100 text-gray-900;
+}
+
+.header {
+  @apply flex justify-between items-center p-4 bg-white shadow-md;
+}
+
+.app-menu {
+  @apply w-64 bg-gray-200 p-4;
+}
+
+.content {
+  @apply flex-1 p-4;
+}
+
+.menu-item {
+  @apply py-2 px-4 hover:bg-gray-300 rounded;
+}
