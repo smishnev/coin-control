@@ -1,0 +1,13 @@
+{
+  "$schema": "https://wails.io/schemas/config.v2.json",
+  "name": "coin-control",
+  "outputfilename": "coin-control",
+  "frontend:install": "pnpm install",
+  "frontend:build": "pnpm run build",
+  "frontend:dev:watcher": "pnpm run dev",
+  "frontend:dev:serverUrl": "auto",
+  "author": {
+    "name": "Sergey Mishnev",
+    "email": "s.mishnev@forsit.de"
+  }
+}

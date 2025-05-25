@@ -1,0 +1,17 @@
+services:
+  db:
+    image: postgres:15
+    container_name: coin-control-db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: coin_control
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
