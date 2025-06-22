@@ -48,3 +48,18 @@ func (u *UserService) CreateOrUpdate(user User) (string, error) {
 	}
 	return *user.ID, nil
 }
+
+func (u *UserService) GetUser(id string) (*User, error) {
+	ctx := context.Background()
+	query := `
+        SELECT id, first_name, last_name
+        FROM users
+        WHERE id = $1
+    `
+	var user User
+	err := database.DB.QueryRow(ctx, query, id).Scan(&user.ID, &user.FirstName, &user.LastName)
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
+}

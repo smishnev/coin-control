@@ -5,3 +5,7 @@
 export function CreateOrUpdate(arg1) {
   return window['go']['user']['UserService']['CreateOrUpdate'](arg1);
 }
+
+export function GetUser(arg1) {
+  return window['go']['user']['UserService']['GetUser'](arg1);
+}

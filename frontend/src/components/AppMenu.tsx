@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 const menuItems = [
   { label: 'item1', key: 'item1' },
   { label: 'item2', key: 'item2' },
+  { label: 'userProfile', key: 'userProfile' },
 ];
 
 interface AppMenuProps {

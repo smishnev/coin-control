@@ -3,3 +3,5 @@
 import {user} from '../models';
 
 export function CreateOrUpdate(arg1:user.User):Promise<string>;
+
+export function GetUser(arg1:string):Promise<user.User>;
