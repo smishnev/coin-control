@@ -1,6 +1,7 @@
 package main
 
 import (
+	"coin-control/backend/auth"
 	"coin-control/backend/database"
 	"coin-control/backend/user"
 	"embed"
@@ -23,6 +24,7 @@ func main() {
 	// Create an instance of the app structure
 	app := NewApp()
 	userService := user.NewUserService()
+	authService := auth.NewAuthService()
 
 	// Create application with options
 	err := wails.Run(&options.App{
@@ -37,6 +39,7 @@ func main() {
 		Bind: []interface{}{
 			app,
 			userService,
+			authService,
 		},
 	})
 

@@ -6,6 +6,10 @@ export function CreateOrUpdate(arg1) {
   return window['go']['user']['UserService']['CreateOrUpdate'](arg1);
 }
 
+export function CreateUserInTransaction(arg1, arg2, arg3) {
+  return window['go']['user']['UserService']['CreateUserInTransaction'](arg1, arg2, arg3);
+}
+
 export function GetUser(arg1) {
   return window['go']['user']['UserService']['GetUser'](arg1);
 }

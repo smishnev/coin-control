@@ -4,6 +4,8 @@ import (
 	"context"
 
 	"coin-control/backend/database"
+
+	"github.com/jackc/pgx/v5"
 )
 
 type User struct {
@@ -16,6 +18,21 @@ type UserService struct{}
 
 func NewUserService() *UserService {
 	return &UserService{}
+}
+
+// CreateUserInTransaction create user in transaction
+func (u *UserService) CreateUserInTransaction(ctx context.Context, tx pgx.Tx, user User) (string, error) {
+	query := `
+		INSERT INTO users (first_name, last_name)
+		VALUES ($1, $2)
+		RETURNING id
+	`
+	var newID string
+	err := tx.QueryRow(ctx, query, user.FirstName, user.LastName).Scan(&newID)
+	if err != nil {
+		return "", err
+	}
+	return newID, nil
 }
 
 func (u *UserService) CreateOrUpdate(user User) (string, error) {
