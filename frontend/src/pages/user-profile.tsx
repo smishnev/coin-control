@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { GetUser, CreateOrUpdate } from "../../wailsjs/go/user/UserService";
+import { GetUser, UpdateUser } from "../../wailsjs/go/user/UserService";
+import { GetBybitByUserId, UpsertBybit } from "../../wailsjs/go/bybit/BybitService";
 import { user } from "../../wailsjs/go/models";
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
@@ -8,23 +9,37 @@ const UserProfileForm: React.FC = () => {
   const { t } = useTranslation();
   const { user: authUser } = useAuth();
 
-  const [form, setForm] = useState<user.User>({
+  const [form, setForm] = useState<user.User & {bybitApiKey: string}>({
     id: "",
     firstName: "",
     lastName: "",
+    bybitApiKey: "",
   });
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    if (authUser) {
+    if (authUser) { 
       GetUser(authUser.user_id)
-        .then((data) => {
-          setForm(data);
+        .then((userData) => {
+          return GetBybitByUserId(authUser.user_id)
+            .then((bybitData) => {
+              return { userData, bybitData };
+            })
+            .catch((bybitError) => {
+              console.log('Bybit data error (this is normal for new users):', bybitError);
+              return { userData, bybitData: null };
+            });
+        })
+        .then(({ userData, bybitData }) => {
+          setForm({
+            ...userData,
+            bybitApiKey: bybitData && bybitData.apiKey ? bybitData.apiKey : ''
+          });
           setLoading(false);
         })
         .catch((error) => {
-          console.error('Error loading user profile:', error);
+          console.error('Error loading user data:', error);
           setLoading(false);
         });
     } else {
@@ -38,8 +53,11 @@ const UserProfileForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const { bybitApiKey, ...userData } = form;
+    
     try {
-      await CreateOrUpdate(form);
+      await UpdateUser(userData);
+      await UpsertBybit(bybitApiKey, userData.id);
       setMessage(t('userProfileUpdateSuccess'));
     } catch (error) {
       console.error('Error updating user profile:', error);
@@ -86,6 +104,20 @@ const UserProfileForm: React.FC = () => {
             onChange={handleChange}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
             placeholder="Enter your last name"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            {t('bybitApiKey')}
+          </label>
+          <input
+            type="text"
+            name="bybitApiKey"
+            value={form.bybitApiKey}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            placeholder="Enter your Bybit key"
           />
         </div>
         

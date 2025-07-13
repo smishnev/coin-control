@@ -26,6 +26,14 @@ export function GetAuthByID(arg1) {
   return window['go']['main']['App']['GetAuthByID'](arg1);
 }
 
+export function GetAuthByNickname(arg1) {
+  return window['go']['main']['App']['GetAuthByNickname'](arg1);
+}
+
+export function GetAuthByUserID(arg1) {
+  return window['go']['main']['App']['GetAuthByUserID'](arg1);
+}
+
 export function Greet(arg1) {
   return window['go']['main']['App']['Greet'](arg1);
 }

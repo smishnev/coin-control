@@ -10,6 +10,7 @@ i18n.use(initReactI18next).init({
       translation: {
         item1: 'Item1',
         item2: 'Item2',
+        bybit: 'Bybit',
         content_item1: 'Content for Item1',
         content_item2: 'Content for Item2',
         language: 'Language',
@@ -52,12 +53,14 @@ i18n.use(initReactI18next).init({
         'Reset Password': 'Reset Password',
         'Enter your nickname and old password to set a new password': 'Enter your nickname and old password to set a new password',
         'Password updated successfully! You can now sign in with your new password.': 'Password updated successfully! You can now sign in with your new password.',
+        'bybitApiKey': 'Bybit Api key',
       },
     },
     de: {
       translation: {
         item1: 'Item1',
         item2: 'Item2',
+        bybit: 'Bybit',
         content_item1: 'Inhalt für Artike1',
         content_item2: 'Inhalt für Artike2',
         language: 'Sprache',
@@ -99,6 +102,7 @@ i18n.use(initReactI18next).init({
         'Reset Password': 'Passwort zurücksetzen',
         'Enter your nickname and old password to set a new password': 'Geben Sie Ihren Nickname und das alte Passwort ein, um ein neues Passwort zu setzen',
         'Password updated successfully! You can now sign in with your new password.': 'Passwort erfolgreich aktualisiert! Sie können sich jetzt mit Ihrem neuen Passwort anmelden.',
+        'bybitApiKey': 'Bybit Api key',      
       },
     },
   },

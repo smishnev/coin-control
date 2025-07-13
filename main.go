@@ -2,6 +2,7 @@ package main
 
 import (
 	"coin-control/backend/auth"
+	"coin-control/backend/bybit"
 	"coin-control/backend/database"
 	"coin-control/backend/user"
 	"embed"
@@ -25,6 +26,7 @@ func main() {
 	app := NewApp()
 	userService := user.NewUserService()
 	authService := auth.NewAuthService()
+	bybitService := bybit.NewBybitService()
 
 	// Create application with options
 	err := wails.Run(&options.App{
@@ -40,6 +42,7 @@ func main() {
 			app,
 			userService,
 			authService,
+			bybitService,
 		},
 	})
 

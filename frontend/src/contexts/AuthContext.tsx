@@ -33,7 +33,7 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
+  const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const isAuthenticated = !!token && !!user;
@@ -46,7 +46,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         try {
           const claims = await AppAPI.ValidateToken(storedToken);
           // If token is valid, get user information
-          const authData = await AppAPI.GetAuthByID(claims.user_id);
+          const authData = await AppAPI.GetAuthByUserID(claims.user_id);
           setUser({
             id: authData.id.toString(),
             nickname: authData.nickname,
@@ -54,11 +54,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           });
           setToken(storedToken);
         } catch (error) {
+          console.error('Token validation failed:', error);
           // Token is invalid, delete it
           localStorage.removeItem('token');
           setToken(null);
           setUser(null);
         }
+      } else {
+        // No token in localStorage, user is not authenticated
+        setToken(null);
+        setUser(null);
       }
       setIsLoading(false);
     };

@@ -14,6 +14,10 @@ export function GetAllAuth():Promise<Array<auth.Auth>>;
 
 export function GetAuthByID(arg1:string):Promise<auth.Auth>;
 
+export function GetAuthByNickname(arg1:string):Promise<auth.Auth>;
+
+export function GetAuthByUserID(arg1:string):Promise<auth.Auth>;
+
 export function Greet(arg1:string):Promise<string>;
 
 export function Login(arg1:auth.LoginRequest):Promise<auth.LoginResponse>;

@@ -9,9 +9,9 @@ import (
 )
 
 type User struct {
-	ID        *string `json:"id,omitempty"`
-	FirstName string  `json:"firstName"`
-	LastName  string  `json:"lastName"`
+	ID        string `json:"id"`
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
 }
 
 type UserService struct{}
@@ -35,22 +35,8 @@ func (u *UserService) CreateUserInTransaction(ctx context.Context, tx pgx.Tx, us
 	return newID, nil
 }
 
-func (u *UserService) CreateOrUpdate(user User) (string, error) {
+func (u *UserService) UpdateUser(user User) (string, error) {
 	ctx := context.Background()
-
-	if user.ID == nil || *user.ID == "" {
-		query := `
-			INSERT INTO users (first_name, last_name)
-			VALUES ($1, $2)
-			RETURNING id
-		`
-		var newID string
-		err := database.DB.QueryRow(ctx, query, user.FirstName, user.LastName).Scan(&newID)
-		if err != nil {
-			return "", err
-		}
-		return newID, nil
-	}
 
 	query := `
 		INSERT INTO users (id, first_name, last_name)
@@ -63,7 +49,7 @@ func (u *UserService) CreateOrUpdate(user User) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return *user.ID, nil
+	return user.ID, nil
 }
 
 func (u *UserService) GetUser(id string) (*User, error) {

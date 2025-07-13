@@ -226,6 +226,34 @@ func (s *AuthService) GetAuthByNickname(ctx context.Context, nickname string) (*
 	return auth, nil
 }
 
+// GetAuthByUserID
+func (s *AuthService) GetAuthByUserID(ctx context.Context, userID string) (*Auth, error) {
+	userUUID, err := uuid.Parse(userID)
+	if err != nil {
+		return nil, fmt.Errorf("invalid user_id: %w", err)
+	}
+
+	query := `
+		SELECT id, nickname, password_hash, user_id, created_at
+		FROM auth
+		WHERE user_id = $1
+	`
+
+	auth := &Auth{}
+	err = database.DB.QueryRow(ctx, query, userUUID).Scan(
+		&auth.ID, &auth.Nickname, &auth.PasswordHash, &auth.UserID, &auth.CreatedAt,
+	)
+
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return nil, fmt.Errorf("auth not found")
+		}
+		return nil, fmt.Errorf("failed to get auth: %w", err)
+	}
+
+	return auth, nil
+}
+
 // UpdateAuth
 func (s *AuthService) UpdateAuth(ctx context.Context, req UpdateAuthRequest) (*Auth, error) {
 	authID, err := uuid.Parse(req.ID)

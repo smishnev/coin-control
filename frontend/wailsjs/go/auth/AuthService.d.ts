@@ -20,6 +20,8 @@ export function GetAuthByID(arg1:context.Context,arg2:string):Promise<auth.Auth>
 
 export function GetAuthByNickname(arg1:context.Context,arg2:string):Promise<auth.Auth>;
 
+export function GetAuthByUserID(arg1:context.Context,arg2:string):Promise<auth.Auth>;
+
 export function Login(arg1:context.Context,arg2:auth.LoginRequest):Promise<auth.LoginResponse>;
 
 export function UpdateAuth(arg1:context.Context,arg2:auth.UpdateAuthRequest):Promise<auth.Auth>;

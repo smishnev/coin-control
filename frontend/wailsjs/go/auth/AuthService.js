@@ -34,6 +34,10 @@ export function GetAuthByNickname(arg1, arg2) {
   return window['go']['auth']['AuthService']['GetAuthByNickname'](arg1, arg2);
 }
 
+export function GetAuthByUserID(arg1, arg2) {
+  return window['go']['auth']['AuthService']['GetAuthByUserID'](arg1, arg2);
+}
+
 export function Login(arg1, arg2) {
   return window['go']['auth']['AuthService']['Login'](arg1, arg2);
 }

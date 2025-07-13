@@ -51,6 +51,16 @@ func initTables() error {
 		created_at TIMESTAMPTZ DEFAULT now()
 	);`
 
+	// Create bybit table
+	bybitTable := `
+	CREATE TABLE IF NOT EXISTS bybit (
+		id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+		api_key TEXT NOT NULL,
+		user_id UUID NOT NULL UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+		created_at TIMESTAMPTZ DEFAULT now(),
+		updated_at TIMESTAMPTZ DEFAULT now()
+	);`
+
 	// Execute SQL commands
 	if _, err := DB.Exec(ctx, usersTable); err != nil {
 		return fmt.Errorf("failed to create users table: %w", err)
@@ -58,6 +68,10 @@ func initTables() error {
 
 	if _, err := DB.Exec(ctx, authTable); err != nil {
 		return fmt.Errorf("failed to create auth table: %w", err)
+	}
+
+	if _, err := DB.Exec(ctx, bybitTable); err != nil {
+		return fmt.Errorf("failed to create bybit table: %w", err)
 	}
 
 	return nil
