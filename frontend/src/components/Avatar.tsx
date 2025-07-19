@@ -30,7 +30,7 @@ const Avatar: React.FC = () => {
                     className="rounded-full w-10 h-10"
                 />
             ) : (
-                <div className='w-[37.5px] h-[37.5px] rounded-full bg-neutral-400 dark:bg-slate-400 flex items-center justify-center text-white font-medium'>
+                <div className='w-[37.5px] h-[37.5px] rounded-full bg-muted flex items-center justify-center text-muted-foreground font-medium'>
                     {initial}
                 </div>
             )}

@@ -4,15 +4,15 @@
 
 /* Custom styles for the application */
 body {
-  @apply bg-gray-100 text-gray-900;
+  @apply bg-background text-foreground;
 }
 
 .header {
-  @apply flex justify-between items-center p-4 bg-white shadow-md;
+  @apply flex justify-between items-center p-4 bg-menu shadow-md;
 }
 
 .app-menu {
-  @apply w-64 bg-gray-200 p-4;
+  @apply w-64 bg-muted p-4;
 }
 
 .content {
@@ -20,5 +20,93 @@ body {
 }
 
 .menu-item {
-  @apply py-2 px-4 hover:bg-gray-300 rounded;
+  @apply py-2 px-4 hover:bg-muted rounded;
+}
+
+:root {
+  /* #f6f9fc */
+  --background: 210 52% 98%;
+  --foreground: 222.2 47.4% 11.2%;
+
+  --muted: 210 40% 96.1%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 222.2 47.4% 11.2%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 47.4% 11.2%;
+
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+
+  --primary: 222.2 47.4% 11.2%;
+  --primary-foreground: 210 40% 98%;
+
+  --secondary: 210 40% 96.1%;
+  --secondary-foreground: 222.2 47.4% 11.2%;
+
+  --accent: 210 40% 96.1%;
+  --accent-foreground: 222.2 47.4% 11.2%;
+
+  --destructive: 0 100% 50%;
+  --destructive-foreground: 210 40% 98%;
+
+  --success: 142.1 70.6% 45.3%;
+  --success-foreground: 210 40% 98%;
+
+  --info: 198.6 88.7% 48.4%;
+  --info-foreground: 210 40% 98%;
+
+  --warning: 38 92.1% 50.2%;
+  --warning-foreground: 210 40% 98%;
+
+  --ring: 215 20.2% 65.1%;
+
+  --radius: 0.5rem;
+
+  /* Brand color #4ade80 */
+  --brand: 142 72% 60%;
+  --brand-foreground: 222.2 47.4% 11.2%;
+}
+
+html.dark {
+  /* #111936 */
+  --background: 226 50% 14%;
+  --foreground: 213 31% 91%;
+
+  --muted: 223 47% 11%;
+  --muted-foreground: 215.4 16.3% 56.9%;
+
+  --popover: 224 71% 4%;
+  --popover-foreground: 215 20.2% 65.1%;
+
+  --card: 224 71% 4%;
+  --card-foreground: 213 31% 91%;
+
+  --border: 216 34% 17%;
+  --input: 216 34% 17%;
+
+  --primary: 210 40% 98%;
+  --primary-foreground: 222.2 47.4% 1.2%;
+
+  --secondary: 222.2 47.4% 11.2%;
+  --secondary-foreground: 210 40% 98%;
+
+  --accent: 216 34% 17%;
+  --accent-foreground: 210 40% 98%;
+
+  --success: 142.1 76.2% 36.3%;
+  --success-foreground: 210 40% 98%;
+
+  --info: 200.4 98% 39.4%;
+  --info-foreground: 210 40% 98%;
+
+  --ring: 216 34% 17%;
+
+  --radius: 0.5rem;
+
+  /* Brand color #4ade80 */
+  --brand: 142 72% 60%;
+  --brand-foreground: 222.2 47.4% 11.2%;
 }

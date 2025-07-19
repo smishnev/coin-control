@@ -74,13 +74,13 @@ const UserProfileForm: React.FC = () => {
   return (
     <div className="max-w-md mx-auto space-y-6">
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-900">User Profile</h2>
-        <p className="text-gray-600">Welcome, {authUser.nickname}!</p>
+        <h2 className="text-2xl font-bold text-foreground">User Profile</h2>
+        <p className="text-foreground">Welcome, {authUser.nickname}!</p>
       </div>
       
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-foreground mb-1">
             {t('firstName')}
           </label>
           <input
@@ -88,13 +88,13 @@ const UserProfileForm: React.FC = () => {
             name="firstName"
             value={form.firstName}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            className="w-full text-muted-foreground bg-menu px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand"
             placeholder="Enter your first name"
           />
         </div>
         
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-foreground mb-1">
             {t('lastName')}
           </label>
           <input
@@ -102,13 +102,13 @@ const UserProfileForm: React.FC = () => {
             name="lastName"
             value={form.lastName}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            className="w-full bg-menu text-muted-foreground px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand"
             placeholder="Enter your last name"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-foreground mb-1">
             {t('bybitApiKey')}
           </label>
           <input
@@ -116,14 +116,14 @@ const UserProfileForm: React.FC = () => {
             name="bybitApiKey"
             value={form.bybitApiKey}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            className="w-full bg-menu text-muted-foreground px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand"
             placeholder="Enter your Bybit key"
           />
         </div>
         
         <button 
           type="submit" 
-          className="w-full bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors"
+          className="w-full bg-brand text-white px-4 py-2 rounded-md hover:brightness-90 focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 transition duration-200"
         >
           {t('saveButton')}
         </button>

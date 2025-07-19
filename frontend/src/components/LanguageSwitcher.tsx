@@ -24,18 +24,18 @@ const LanguageSwitcher: React.FC = () => {
   return (
     <div className="relative" ref={ref}>
       <button
-        className="flex items-center gap-2 px-3 py-2 rounded-lg bg-background border border-gray-200 dark:border-gray-700 shadow-sm text-foreground font-sans font-medium hover:bg-menu-active transition"
+        className="flex items-center gap-2 px-3 py-2 rounded-lg bg-background border border-border shadow-sm text-foreground font-sans font-medium hover:bg-menu-active transition"
         onClick={() => setOpen((v) => !v)}
         style={{ minWidth: 56 }}
       >
         <span className="text-xl font-normal">{currentLang.flag}</span>
         <span className="hidden sm:inline">{currentLang.code.toUpperCase()}</span>
-        <svg className="ml-1 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+        <svg className="ml-1 w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
           <path d="M19 9l-7 7-7-7" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       </button>
       {open && (
-        <div className="absolute left-0 mt-2 w-36 bg-menu border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-10 animate-fade-in">
+        <div className="absolute left-0 mt-2 w-36 bg-menu border border-border rounded-lg shadow-lg z-10 animate-fade-in">
           {languages.map((l) => (
             <button
               key={l.code}

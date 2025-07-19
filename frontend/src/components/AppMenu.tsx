@@ -17,7 +17,7 @@ const AppMenu: React.FC<AppMenuProps> = ({ activeMenu, setActiveMenu }) => {
   const { t } = useTranslation();
 
   return (
-    <aside className="h-screen w-56 bg-menu border-r border-gray-200 dark:border-gray-700 flex flex-col py-6 px-2">
+    <aside className="h-screen w-56 bg-menu border-r border-border flex flex-col py-6 px-2">
       <nav className="flex flex-col gap-1">
         {menuItems.map((item) => (
           <button
