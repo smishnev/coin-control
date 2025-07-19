@@ -55,11 +55,6 @@ func (a *App) GetAuthByUserID(userID string) (*auth.Auth, error) {
 	return a.authService.GetAuthByUserID(a.ctx, userID)
 }
 
-// GetAuthByNickname
-func (a *App) GetAuthByNickname(nickname string) (*auth.Auth, error) {
-	return a.authService.GetAuthByNickname(a.ctx, nickname)
-}
-
 // UpdateAuth
 func (a *App) UpdateAuth(req auth.UpdateAuthRequest) (*auth.Auth, error) {
 	return a.authService.UpdateAuth(a.ctx, req)

@@ -26,12 +26,12 @@ export function GetAllAuth(arg1) {
   return window['go']['auth']['AuthService']['GetAllAuth'](arg1);
 }
 
-export function GetAuthByID(arg1, arg2) {
-  return window['go']['auth']['AuthService']['GetAuthByID'](arg1, arg2);
+export function GetAuthByCredentials(arg1, arg2, arg3) {
+  return window['go']['auth']['AuthService']['GetAuthByCredentials'](arg1, arg2, arg3);
 }
 
-export function GetAuthByNickname(arg1, arg2) {
-  return window['go']['auth']['AuthService']['GetAuthByNickname'](arg1, arg2);
+export function GetAuthByID(arg1, arg2) {
+  return window['go']['auth']['AuthService']['GetAuthByID'](arg1, arg2);
 }
 
 export function GetAuthByUserID(arg1, arg2) {

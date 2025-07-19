@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as AppAPI from '../../wailsjs/go/main/App';
-import * as UserService from '../../wailsjs/go/user/UserService';
 
 interface AuthProps {
   onLogin?: (authData: any) => void;

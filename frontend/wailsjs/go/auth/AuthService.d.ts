@@ -16,9 +16,9 @@ export function ForgotPassword(arg1:context.Context,arg2:auth.ForgotPasswordRequ
 
 export function GetAllAuth(arg1:context.Context):Promise<Array<auth.Auth>>;
 
-export function GetAuthByID(arg1:context.Context,arg2:string):Promise<auth.Auth>;
+export function GetAuthByCredentials(arg1:context.Context,arg2:string,arg3:string):Promise<auth.Auth>;
 
-export function GetAuthByNickname(arg1:context.Context,arg2:string):Promise<auth.Auth>;
+export function GetAuthByID(arg1:context.Context,arg2:string):Promise<auth.Auth>;
 
 export function GetAuthByUserID(arg1:context.Context,arg2:string):Promise<auth.Auth>;
 

@@ -85,23 +85,6 @@ func hashPassword(password string) (string, error) {
 	return hex.EncodeToString(hash[:]) + ":" + hex.EncodeToString(salt), nil
 }
 
-// verifyPassword
-func verifyPassword(password, hashWithSalt string) bool {
-	parts := strings.Split(hashWithSalt, ":")
-	if len(parts) != 2 {
-		return false
-	}
-
-	hash, saltHex := parts[0], parts[1]
-	salt, err := hex.DecodeString(saltHex)
-	if err != nil {
-		return false
-	}
-
-	expectedHash := sha256.Sum256(append([]byte(password), salt...))
-	return hex.EncodeToString(expectedHash[:]) == hash
-}
-
 // generateToken
 func (s *AuthService) generateToken(auth *Auth) (string, error) {
 	claims := &Claims{
@@ -203,26 +186,37 @@ func (s *AuthService) GetAuthByID(ctx context.Context, id string) (*Auth, error)
 	return auth, nil
 }
 
-// GetAuthByNickname
-func (s *AuthService) GetAuthByNickname(ctx context.Context, nickname string) (*Auth, error) {
+// GetAuthByCredentials
+func (s *AuthService) GetAuthByCredentials(ctx context.Context, nickname, password string) (*Auth, error) {
 	query := `
 		SELECT id, nickname, password_hash, user_id, created_at
 		FROM auth
 		WHERE nickname = $1
 	`
-
 	auth := &Auth{}
 	err := database.DB.QueryRow(ctx, query, nickname).Scan(
 		&auth.ID, &auth.Nickname, &auth.PasswordHash, &auth.UserID, &auth.CreatedAt,
 	)
-
 	if err != nil {
 		if err == pgx.ErrNoRows {
-			return nil, fmt.Errorf("auth not found")
+			return nil, fmt.Errorf("invalid credentials")
 		}
 		return nil, fmt.Errorf("failed to get auth: %w", err)
 	}
-
+	// Check password
+	parts := strings.Split(auth.PasswordHash, ":")
+	if len(parts) != 2 {
+		return nil, fmt.Errorf("invalid credentials")
+	}
+	hash, saltHex := parts[0], parts[1]
+	salt, err := hex.DecodeString(saltHex)
+	if err != nil {
+		return nil, fmt.Errorf("invalid credentials")
+	}
+	expectedHash := sha256.Sum256(append([]byte(password), salt...))
+	if hex.EncodeToString(expectedHash[:]) != hash {
+		return nil, fmt.Errorf("invalid credentials")
+	}
 	return auth, nil
 }
 
@@ -319,12 +313,8 @@ func (s *AuthService) DeleteAuth(ctx context.Context, id string) error {
 
 // Login
 func (s *AuthService) Login(ctx context.Context, req LoginRequest) (*LoginResponse, error) {
-	auth, err := s.GetAuthByNickname(ctx, req.Nickname)
+	auth, err := s.GetAuthByCredentials(ctx, req.Nickname, req.Password)
 	if err != nil {
-		return nil, fmt.Errorf("invalid credentials")
-	}
-
-	if !verifyPassword(req.Password, auth.PasswordHash) {
 		return nil, fmt.Errorf("invalid credentials")
 	}
 
@@ -447,24 +437,17 @@ func (s *AuthService) CreateUserWithAuth(ctx context.Context, req CreateAuthRequ
 
 // UpdatePasswordByNickname update password by nickname
 func (s *AuthService) UpdatePasswordByNickname(ctx context.Context, req UpdatePasswordRequest) error {
-	// Get auth record by nickname
-	auth, err := s.GetAuthByNickname(ctx, req.Nickname)
+	_, err := s.GetAuthByCredentials(ctx, req.Nickname, req.OldPassword)
 	if err != nil {
-		return fmt.Errorf("user not found")
-	}
-
-	// Check old password
-	if !verifyPassword(req.OldPassword, auth.PasswordHash) {
 		return fmt.Errorf("invalid old password")
 	}
 
-	// Hash new password
 	newPasswordHash, err := hashPassword(req.NewPassword)
 	if err != nil {
 		return fmt.Errorf("failed to hash new password: %w", err)
 	}
 
-	// Update password
+	// Updating password
 	query := `
 		UPDATE auth
 		SET password_hash = $1
