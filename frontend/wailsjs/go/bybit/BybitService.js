@@ -10,6 +10,6 @@ export function GetBybitByUserId(arg1) {
   return window['go']['bybit']['BybitService']['GetBybitByUserId'](arg1);
 }
 
-export function UpsertBybit(arg1, arg2) {
-  return window['go']['bybit']['BybitService']['UpsertBybit'](arg1, arg2);
+export function UpsertBybit(arg1, arg2, arg3) {
+  return window['go']['bybit']['BybitService']['UpsertBybit'](arg1, arg2, arg3);
 }

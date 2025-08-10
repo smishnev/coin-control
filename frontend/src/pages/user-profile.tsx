@@ -9,12 +9,15 @@ const UserProfileForm: React.FC = () => {
   const { t } = useTranslation();
   const { user: authUser } = useAuth();
 
-  const [form, setForm] = useState<user.User & {bybitApiKey: string}>({
-    id: "",
-    firstName: "",
-    lastName: "",
-    bybitApiKey: "",
-  });
+  const [form, setForm] = useState<user.User & {bybitApiKey: string, bybitApiSecret: string}>(
+    {
+      id: "",
+      firstName: "",
+      lastName: "",
+      bybitApiKey: "",
+      bybitApiSecret: "",
+    }
+  );
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
 
@@ -34,7 +37,8 @@ const UserProfileForm: React.FC = () => {
         .then(({ userData, bybitData }) => {
           setForm({
             ...userData,
-            bybitApiKey: bybitData && bybitData.apiKey ? bybitData.apiKey : ''
+            bybitApiKey: bybitData && bybitData.apiKey ? bybitData.apiKey : '',
+            bybitApiSecret: bybitData && bybitData.apiSecret ? bybitData.apiSecret : '',
           });
           setLoading(false);
         })
@@ -53,11 +57,11 @@ const UserProfileForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const { bybitApiKey, ...userData } = form;
+    const { bybitApiKey, bybitApiSecret, ...userData } = form;
     
     try {
       await UpdateUser(userData);
-      await UpsertBybit(bybitApiKey, userData.id);
+      await UpsertBybit(bybitApiKey, bybitApiSecret, userData.id);
       setMessage(t('userProfileUpdateSuccess'));
     } catch (error) {
       console.error('Error updating user profile:', error);
@@ -118,6 +122,20 @@ const UserProfileForm: React.FC = () => {
             onChange={handleChange}
             className="w-full bg-menu text-muted-foreground px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand"
             placeholder="Enter your Bybit key"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-foreground mb-1">
+            {t('bybitApiSecret')}
+          </label>
+          <input
+            type="password"
+            name="bybitApiSecret"
+            value={form.bybitApiSecret}
+            onChange={handleChange}
+            className="w-full bg-menu text-muted-foreground px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand"
+            placeholder="Enter your Bybit secret"
           />
         </div>
         

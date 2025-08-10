@@ -202,6 +202,7 @@ export namespace bybit {
 	export class Bybit {
 	    id: string;
 	    apiKey: string;
+	    apiSecret: string;
 	    userId: string;
 	    // Go type: time
 	    createdAt: any;
@@ -216,6 +217,7 @@ export namespace bybit {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.id = source["id"];
 	        this.apiKey = source["apiKey"];
+	        this.apiSecret = source["apiSecret"];
 	        this.userId = source["userId"];
 	        this.createdAt = this.convertValues(source["createdAt"], null);
 	        this.updatedAt = this.convertValues(source["updatedAt"], null);

@@ -54,6 +54,7 @@ i18n.use(initReactI18next).init({
         'Enter your nickname and old password to set a new password': 'Enter your nickname and old password to set a new password',
         'Password updated successfully! You can now sign in with your new password.': 'Password updated successfully! You can now sign in with your new password.',
         'bybitApiKey': 'Bybit Api key',
+        'bybitApiSecret': 'Bybit Api secret',
       },
     },
     de: {
@@ -103,6 +104,7 @@ i18n.use(initReactI18next).init({
         'Enter your nickname and old password to set a new password': 'Geben Sie Ihren Nickname und das alte Passwort ein, um ein neues Passwort zu setzen',
         'Password updated successfully! You can now sign in with your new password.': 'Passwort erfolgreich aktualisiert! Sie können sich jetzt mit Ihrem neuen Passwort anmelden.',
         'bybitApiKey': 'Bybit Api key',      
+        'bybitApiSecret': 'Bybit Api secret',
       },
     },
   },

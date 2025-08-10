@@ -56,10 +56,17 @@ func initTables() error {
 	CREATE TABLE IF NOT EXISTS bybit (
 		id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 		api_key TEXT NOT NULL,
+		api_secret TEXT NOT NULL,
 		user_id UUID NOT NULL UNIQUE REFERENCES users(id) ON DELETE CASCADE,
 		created_at TIMESTAMPTZ DEFAULT now(),
 		updated_at TIMESTAMPTZ DEFAULT now()
 	);`
+
+	// Ensure api_secret column exists for existing databases
+	ensureApiSecretColumn := `
+	ALTER TABLE bybit
+	ADD COLUMN IF NOT EXISTS api_secret TEXT NOT NULL DEFAULT '';
+	`
 
 	// Execute SQL commands
 	if _, err := DB.Exec(ctx, usersTable); err != nil {
@@ -72,6 +79,10 @@ func initTables() error {
 
 	if _, err := DB.Exec(ctx, bybitTable); err != nil {
 		return fmt.Errorf("failed to create bybit table: %w", err)
+	}
+
+	if _, err := DB.Exec(ctx, ensureApiSecretColumn); err != nil {
+		return fmt.Errorf("failed to ensure api_secret column: %w", err)
 	}
 
 	return nil

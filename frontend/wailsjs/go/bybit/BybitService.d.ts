@@ -6,4 +6,4 @@ export function CreateBybit(arg1:bybit.Bybit):Promise<string>;
 
 export function GetBybitByUserId(arg1:string):Promise<bybit.Bybit>;
 
-export function UpsertBybit(arg1:string,arg2:string):Promise<void>;
+export function UpsertBybit(arg1:string,arg2:string,arg3:string):Promise<void>;
