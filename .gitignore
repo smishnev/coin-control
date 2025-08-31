@@ -2,3 +2,28 @@ build/bin
 node_modules
 frontend/dist
 frontend/node_modules
+.env
+
+# Executable files
+*.exe
+coin-control
+coin-control.exe
+
+# IDE/Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp

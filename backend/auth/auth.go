@@ -17,6 +17,17 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
+const (
+	jwtSecretKey = "just-my-very-secret-key-RR-PP-OO"
+	jwtExpiry    = 24 * time.Hour
+	saltSize     = 16
+)
+
+// =============================================================================
+// Data structures
+// =============================================================================
+
+// Auth represents user authentication credentials
 type Auth struct {
 	ID           uuid.UUID `json:"id"`
 	Nickname     string    `json:"nickname"`
@@ -25,73 +36,110 @@ type Auth struct {
 	CreatedAt    time.Time `json:"created_at"`
 }
 
+// CreateAuthRequest represents request to create authentication credentials
 type CreateAuthRequest struct {
 	Nickname string `json:"nickname"`
 	Password string `json:"password"`
 	UserID   string `json:"user_id"`
 }
 
+// UpdateAuthRequest represents request to update authentication credentials
 type UpdateAuthRequest struct {
 	ID       string `json:"id"`
 	Nickname string `json:"nickname"`
 	Password string `json:"password"`
 }
 
+// LoginRequest represents login credentials
 type LoginRequest struct {
 	Nickname string `json:"nickname"`
 	Password string `json:"password"`
 }
 
+// LoginResponse represents successful login response
 type LoginResponse struct {
 	Auth  *Auth  `json:"auth"`
 	Token string `json:"token"`
 }
 
+// Claims represents JWT token claims
 type Claims struct {
 	UserID   string `json:"user_id"`
 	Nickname string `json:"nickname"`
 	jwt.RegisteredClaims
 }
 
-type AuthService struct {
-	jwtSecret []byte
-}
-
+// UpdatePasswordRequest represents password update request
 type UpdatePasswordRequest struct {
 	Nickname    string `json:"nickname"`
 	OldPassword string `json:"old_password"`
 	NewPassword string `json:"new_password"`
 }
+
+// ForgotPasswordRequest represents password recovery request
 type ForgotPasswordRequest struct {
 	Nickname    string `json:"nickname"`
 	NewPassword string `json:"new_password"`
 }
 
+// =============================================================================
+// Service structure
+// =============================================================================
+
+// AuthService provides authentication and user management functionality
+type AuthService struct {
+	jwtSecret []byte
+}
+
+// NewAuthService creates a new instance of AuthService
 func NewAuthService() *AuthService {
-	secret := []byte("just-my-very-secret-key-RR-PP-OO")
 	return &AuthService{
-		jwtSecret: secret,
+		jwtSecret: []byte(jwtSecretKey),
 	}
 }
 
-// hashPassword
+// =============================================================================
+// Password utilities
+// =============================================================================
+
+// hashPassword creates a salted hash of the provided password
 func hashPassword(password string) (string, error) {
-	salt := make([]byte, 16)
+	salt := make([]byte, saltSize)
 	if _, err := rand.Read(salt); err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to generate salt: %w", err)
 	}
 
 	hash := sha256.Sum256(append([]byte(password), salt...))
 	return hex.EncodeToString(hash[:]) + ":" + hex.EncodeToString(salt), nil
 }
 
-// generateToken
+// verifyPassword verifies a password against its hash
+func verifyPassword(password, hash string) bool {
+	parts := strings.Split(hash, ":")
+	if len(parts) != 2 {
+		return false
+	}
+
+	salt, err := hex.DecodeString(parts[1])
+	if err != nil {
+		return false
+	}
+
+	expectedHash := sha256.Sum256(append([]byte(password), salt...))
+	return hex.EncodeToString(expectedHash[:]) == parts[0]
+}
+
+// =============================================================================
+// JWT token management
+// =============================================================================
+
+// generateToken creates a JWT token for the given authentication record
 func (s *AuthService) generateToken(auth *Auth) (string, error) {
 	claims := &Claims{
 		UserID:   auth.UserID.String(),
 		Nickname: auth.Nickname,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(jwtExpiry)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			NotBefore: jwt.NewNumericDate(time.Now()),
 		},

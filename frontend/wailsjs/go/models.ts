@@ -241,6 +241,44 @@ export namespace bybit {
 		    return a;
 		}
 	}
+	export class Holding {
+	    coin: string;
+	    free: string;
+	    locked: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new Holding(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.coin = source["coin"];
+	        this.free = source["free"];
+	        this.locked = source["locked"];
+	    }
+	}
+	export class IconEntry {
+	    coin: string;
+	    iconUrl?: string;
+	    darkUrl?: string;
+	    lightUrl?: string;
+	    darkDataUrl?: string;
+	    lightDataUrl?: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new IconEntry(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.coin = source["coin"];
+	        this.iconUrl = source["iconUrl"];
+	        this.darkUrl = source["darkUrl"];
+	        this.lightUrl = source["lightUrl"];
+	        this.darkDataUrl = source["darkDataUrl"];
+	        this.lightDataUrl = source["lightDataUrl"];
+	    }
+	}
 
 }
 

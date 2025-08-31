@@ -6,8 +6,24 @@ export function CreateBybit(arg1) {
   return window['go']['bybit']['BybitService']['CreateBybit'](arg1);
 }
 
+export function FetchSpotHoldings(arg1) {
+  return window['go']['bybit']['BybitService']['FetchSpotHoldings'](arg1);
+}
+
 export function GetBybitByUserId(arg1) {
   return window['go']['bybit']['BybitService']['GetBybitByUserId'](arg1);
+}
+
+export function GetCoinIconURLs(arg1) {
+  return window['go']['bybit']['BybitService']['GetCoinIconURLs'](arg1);
+}
+
+export function GetCoinIcons(arg1) {
+  return window['go']['bybit']['BybitService']['GetCoinIcons'](arg1);
+}
+
+export function PrefetchCoinIcons(arg1) {
+  return window['go']['bybit']['BybitService']['PrefetchCoinIcons'](arg1);
 }
 
 export function UpsertBybit(arg1, arg2, arg3) {

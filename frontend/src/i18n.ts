@@ -55,6 +55,8 @@ i18n.use(initReactI18next).init({
         'Password updated successfully! You can now sign in with your new password.': 'Password updated successfully! You can now sign in with your new password.',
         'bybitApiKey': 'Bybit Api key',
         'bybitApiSecret': 'Bybit Api secret',
+        'myCoins': 'My Coins',
+        'Loading...': 'Loading...',
       },
     },
     de: {
@@ -105,6 +107,8 @@ i18n.use(initReactI18next).init({
         'Password updated successfully! You can now sign in with your new password.': 'Passwort erfolgreich aktualisiert! Sie können sich jetzt mit Ihrem neuen Passwort anmelden.',
         'bybitApiKey': 'Bybit Api key',      
         'bybitApiSecret': 'Bybit Api secret',
+        'myCoins': 'Meine Münzen',
+        'Loading...': 'Laden...',
       },
     },
   },

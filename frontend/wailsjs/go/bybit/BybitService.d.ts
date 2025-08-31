@@ -4,6 +4,14 @@ import {bybit} from '../models';
 
 export function CreateBybit(arg1:bybit.Bybit):Promise<string>;
 
+export function FetchSpotHoldings(arg1:string):Promise<Array<bybit.Holding>>;
+
 export function GetBybitByUserId(arg1:string):Promise<bybit.Bybit>;
+
+export function GetCoinIconURLs(arg1:Array<string>):Promise<Array<bybit.IconEntry>>;
+
+export function GetCoinIcons(arg1:Array<string>):Promise<Array<bybit.IconEntry>>;
+
+export function PrefetchCoinIcons(arg1:Array<string>):Promise<void>;
 
 export function UpsertBybit(arg1:string,arg2:string,arg3:string):Promise<void>;

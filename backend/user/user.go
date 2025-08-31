@@ -8,19 +8,34 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
+// =============================================================================
+// Data structures
+// =============================================================================
+
+// User represents a user in the system
 type User struct {
 	ID        string `json:"id"`
 	FirstName string `json:"firstName"`
 	LastName  string `json:"lastName"`
 }
 
+// =============================================================================
+// Service structure
+// =============================================================================
+
+// UserService provides user management functionality
 type UserService struct{}
 
+// NewUserService creates a new instance of UserService
 func NewUserService() *UserService {
 	return &UserService{}
 }
 
-// CreateUserInTransaction create user in transaction
+// =============================================================================
+// User operations
+// =============================================================================
+
+// CreateUserInTransaction creates a user within a database transaction
 func (u *UserService) CreateUserInTransaction(ctx context.Context, tx pgx.Tx, user User) (string, error) {
 	query := `
 		INSERT INTO users (first_name, last_name)
@@ -35,6 +50,7 @@ func (u *UserService) CreateUserInTransaction(ctx context.Context, tx pgx.Tx, us
 	return newID, nil
 }
 
+// UpdateUser creates or updates a user record
 func (u *UserService) UpdateUser(user User) (string, error) {
 	ctx := context.Background()
 
@@ -52,6 +68,7 @@ func (u *UserService) UpdateUser(user User) (string, error) {
 	return user.ID, nil
 }
 
+// GetUser retrieves a user by ID
 func (u *UserService) GetUser(id string) (*User, error) {
 	ctx := context.Background()
 	query := `
