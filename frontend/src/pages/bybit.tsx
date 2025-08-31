@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import { FetchSpotHoldings, GetCoinIconURLs, PrefetchCoinIcons } from "../../wailsjs/go/bybit/BybitService";
 import { useAuth } from "../contexts/AuthContext";
 
@@ -7,6 +8,7 @@ type Holding = { coin: string; free: string; locked: string };
 
 const BybitForm: React.FC = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { user: authUser } = useAuth();
   const [holdings, setHoldings] = useState<Holding[]>([]);
   const [loading, setLoading] = useState(true);
@@ -67,6 +69,7 @@ const BybitForm: React.FC = () => {
             <div 
               key={holding.coin} 
               className="flex flex-col items-center p-4 border border-border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition-colors"
+              onClick={() => navigate(`/bybit/${holding.coin.toLowerCase()}`)}
             >
               {icon && <img src={icon} alt={holding.coin} className="w-8 h-8 mb-2" />}
               <span className="text-sm font-medium">{holding.coin.toUpperCase()}</span>

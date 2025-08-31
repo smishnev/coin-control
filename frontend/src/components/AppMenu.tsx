@@ -1,20 +1,21 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-
-const menuItems = [
-  { label: 'item1', key: 'item1' },
-  { label: 'item2', key: 'item2' },
-  { label: 'bybit', key: 'bybit' },
-  { label: 'userProfile', key: 'userProfile' },
-];
+import { useNavigate } from 'react-router-dom';
+import { menuItems } from '../utils/menu';
 
 interface AppMenuProps {
   activeMenu: string;
-  setActiveMenu: (key: string) => void;
+  setActiveMenu?: (key: string) => void;
 }
 
 const AppMenu: React.FC<AppMenuProps> = ({ activeMenu, setActiveMenu }) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+
+  const handleMenuClick = (item: any) => {
+    setActiveMenu?.(item.key);
+    navigate(item.path);
+  };
 
   return (
     <aside className="h-screen w-56 bg-menu border-r border-border flex flex-col py-6 px-2">
@@ -22,7 +23,7 @@ const AppMenu: React.FC<AppMenuProps> = ({ activeMenu, setActiveMenu }) => {
         {menuItems.map((item) => (
           <button
             key={item.key}
-            onClick={() => setActiveMenu(item.key)}
+            onClick={() => handleMenuClick(item)}
             className={`flex items-center px-4 py-2 rounded-lg text-base font-medium transition
               ${
                 activeMenu === item.key

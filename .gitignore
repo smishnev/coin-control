@@ -4,6 +4,10 @@ frontend/dist
 frontend/node_modules
 .env
 
+# Build cache files
+*.md5
+package.json.md5
+
 # Executable files
 *.exe
 coin-control

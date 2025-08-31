@@ -11,7 +11,7 @@ interface User {
 interface MainLayoutProps {
   children: React.ReactNode;
   activeMenu: string;
-  setActiveMenu: (key: string) => void;
+  setActiveMenu?: (key: string) => void;
   user: User | null;
   onLogout: () => void;
 }
