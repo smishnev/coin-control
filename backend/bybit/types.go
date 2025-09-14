@@ -12,6 +12,7 @@ import (
 	"net/url"
 	"sort"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -20,6 +21,19 @@ type Holding struct {
 	Coin   string `json:"coin"`
 	Free   string `json:"free"`
 	Locked string `json:"locked"`
+}
+
+// Price data structures
+type TickerPriceResponse struct {
+	RetCode int    `json:"retCode"`
+	RetMsg  string `json:"retMsg"`
+	Result  struct {
+		Category string `json:"category"`
+		List     []struct {
+			Symbol    string `json:"symbol"`
+			LastPrice string `json:"lastPrice"`
+		} `json:"list"`
+	} `json:"result"`
 }
 
 // HTTP client for requests
@@ -166,4 +180,45 @@ func (s *BybitService) getSpotHoldings(ctx context.Context, userID string) ([]Ho
 		}
 	}
 	return holdings, nil
+}
+
+// getCurrentPrice gets current price for a symbol via REST API
+func getCurrentPrice(symbol string) (string, error) {
+	// Format symbol for Bybit API (e.g., "btc" -> "BTCUSDT")
+	symbol = fmt.Sprintf("%sUSDT", strings.ToUpper(symbol))
+
+	// Build request URL
+	baseURL := "https://api.bybit.com/v5/market/tickers"
+	params := url.Values{}
+	params.Set("category", "spot")
+	params.Set("symbol", symbol)
+
+	reqURL := fmt.Sprintf("%s?%s", baseURL, params.Encode())
+
+	// Make request
+	resp, err := httpClient.Get(reqURL)
+	if err != nil {
+		return "", fmt.Errorf("failed to fetch price: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		return "", fmt.Errorf("API returned status %d", resp.StatusCode)
+	}
+
+	// Parse response
+	var priceResp TickerPriceResponse
+	if err := json.NewDecoder(resp.Body).Decode(&priceResp); err != nil {
+		return "", fmt.Errorf("failed to parse response: %w", err)
+	}
+
+	if priceResp.RetCode != 0 {
+		return "", fmt.Errorf("API error: %s", priceResp.RetMsg)
+	}
+
+	if len(priceResp.Result.List) == 0 {
+		return "", fmt.Errorf("no price data found for symbol %s", symbol)
+	}
+
+	return priceResp.Result.List[0].LastPrice, nil
 }

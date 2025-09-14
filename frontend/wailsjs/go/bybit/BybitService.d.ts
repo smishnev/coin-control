@@ -12,6 +12,12 @@ export function GetCoinIconURLs(arg1:Array<string>):Promise<Array<bybit.IconEntr
 
 export function GetCoinIcons(arg1:Array<string>):Promise<Array<bybit.IconEntry>>;
 
+export function GetCurrentPrice(arg1:string):Promise<string>;
+
 export function PrefetchCoinIcons(arg1:Array<string>):Promise<void>;
+
+export function SubscribeToPrice(arg1:string):Promise<any>;
+
+export function UnsubscribeFromPrice(arg1:string,arg2:any):Promise<void>;
 
 export function UpsertBybit(arg1:string,arg2:string,arg3:string):Promise<void>;

@@ -22,8 +22,20 @@ export function GetCoinIcons(arg1) {
   return window['go']['bybit']['BybitService']['GetCoinIcons'](arg1);
 }
 
+export function GetCurrentPrice(arg1) {
+  return window['go']['bybit']['BybitService']['GetCurrentPrice'](arg1);
+}
+
 export function PrefetchCoinIcons(arg1) {
   return window['go']['bybit']['BybitService']['PrefetchCoinIcons'](arg1);
+}
+
+export function SubscribeToPrice(arg1) {
+  return window['go']['bybit']['BybitService']['SubscribeToPrice'](arg1);
+}
+
+export function UnsubscribeFromPrice(arg1, arg2) {
+  return window['go']['bybit']['BybitService']['UnsubscribeFromPrice'](arg1, arg2);
 }
 
 export function UpsertBybit(arg1, arg2, arg3) {

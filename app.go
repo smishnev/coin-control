@@ -2,20 +2,30 @@ package main
 
 import (
 	"coin-control/backend/auth"
+	"coin-control/backend/bybit"
 	"context"
 	"fmt"
+	"strings"
+	"sync"
+
+	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 // App represents the main application structure
 type App struct {
-	ctx         context.Context
-	authService *auth.AuthService
+	ctx                context.Context
+	authService        *auth.AuthService
+	bybitService       *bybit.BybitService
+	priceSubscriptions map[string]chan bybit.PriceData
+	priceMutex         sync.RWMutex
 }
 
 // NewApp creates a new App application instance
 func NewApp() *App {
 	return &App{
-		authService: auth.NewAuthService(),
+		authService:        auth.NewAuthService(),
+		bybitService:       bybit.NewBybitService(),
+		priceSubscriptions: make(map[string]chan bybit.PriceData),
 	}
 }
 
@@ -99,4 +109,93 @@ func (a *App) UpdatePasswordByNickname(req auth.UpdatePasswordRequest) error {
 // ForgotPassword handles password recovery process
 func (a *App) ForgotPassword(req auth.ForgotPasswordRequest) error {
 	return a.authService.ForgotPassword(a.ctx, req)
+}
+
+// =============================================================================
+// Bybit integration methods
+// =============================================================================
+
+// FetchSpotHoldings fetches spot holdings for a user
+func (a *App) FetchSpotHoldings(userId string) ([]bybit.Holding, error) {
+	return a.bybitService.FetchSpotHoldings(userId)
+}
+
+// GetCoinIconURLs gets coin icon URLs
+func (a *App) GetCoinIconURLs(coins []string) ([]bybit.IconEntry, error) {
+	return a.bybitService.GetCoinIconURLs(coins)
+}
+
+// PrefetchCoinIcons prefetches coin icons for caching
+func (a *App) PrefetchCoinIcons(coins []string) {
+	a.bybitService.PrefetchCoinIcons(coins)
+}
+
+// =============================================================================
+// Price streaming methods
+// =============================================================================
+
+// StartPriceStream starts streaming prices for a symbol
+func (a *App) StartPriceStream(symbol string) error {
+	a.priceMutex.Lock()
+	defer a.priceMutex.Unlock()
+
+	// Check if already subscribed
+	if _, exists := a.priceSubscriptions[symbol]; exists {
+		return nil
+	}
+
+	// Subscribe to price updates
+	priceChan, err := a.bybitService.SubscribeToPrice(symbol)
+	if err != nil {
+		return err
+	}
+
+	// Store the channel
+	a.priceSubscriptions[symbol] = priceChan
+
+	// Start goroutine to handle price updates for this symbol
+	go a.handlePriceUpdates(symbol, priceChan)
+
+	return nil
+}
+
+// StopPriceStream stops streaming prices for a symbol
+func (a *App) StopPriceStream(symbol string) {
+	a.priceMutex.Lock()
+	defer a.priceMutex.Unlock()
+
+	if priceChan, exists := a.priceSubscriptions[symbol]; exists {
+		a.bybitService.UnsubscribeFromPrice(symbol, priceChan)
+		delete(a.priceSubscriptions, symbol)
+	}
+}
+
+// GetCurrentPrice gets the current price for a symbol (one-time request)
+func (a *App) GetCurrentPrice(symbol string) (string, error) {
+	return a.bybitService.GetCurrentPrice(symbol)
+}
+
+// handlePriceUpdates processes incoming price updates and emits them to frontend
+func (a *App) handlePriceUpdates(symbol string, priceChan chan bybit.PriceData) {
+	for priceUpdate := range priceChan {
+		// Use the original symbol parameter to ensure consistency
+		// between frontend listener and backend emitter
+		coinSymbol := strings.ToLower(symbol)
+
+		priceValue := priceUpdate.Price
+		if priceValue == "" {
+			continue
+		}
+
+		// Emit event to frontend using the original symbol parameter
+		eventName := fmt.Sprintf("price-update-%s", coinSymbol)
+		eventData := map[string]interface{}{
+			"symbol": coinSymbol,
+			"price":  priceValue,
+		}
+
+		if a.ctx != nil {
+			runtime.EventsEmit(a.ctx, eventName, eventData)
+		}
+	}
 }

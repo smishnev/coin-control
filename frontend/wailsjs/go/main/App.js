@@ -14,6 +14,10 @@ export function DeleteAuth(arg1) {
   return window['go']['main']['App']['DeleteAuth'](arg1);
 }
 
+export function FetchSpotHoldings(arg1) {
+  return window['go']['main']['App']['FetchSpotHoldings'](arg1);
+}
+
 export function ForgotPassword(arg1) {
   return window['go']['main']['App']['ForgotPassword'](arg1);
 }
@@ -30,12 +34,32 @@ export function GetAuthByUserID(arg1) {
   return window['go']['main']['App']['GetAuthByUserID'](arg1);
 }
 
+export function GetCoinIconURLs(arg1) {
+  return window['go']['main']['App']['GetCoinIconURLs'](arg1);
+}
+
+export function GetCurrentPrice(arg1) {
+  return window['go']['main']['App']['GetCurrentPrice'](arg1);
+}
+
 export function Greet(arg1) {
   return window['go']['main']['App']['Greet'](arg1);
 }
 
 export function Login(arg1) {
   return window['go']['main']['App']['Login'](arg1);
+}
+
+export function PrefetchCoinIcons(arg1) {
+  return window['go']['main']['App']['PrefetchCoinIcons'](arg1);
+}
+
+export function StartPriceStream(arg1) {
+  return window['go']['main']['App']['StartPriceStream'](arg1);
+}
+
+export function StopPriceStream(arg1) {
+  return window['go']['main']['App']['StopPriceStream'](arg1);
 }
 
 export function UpdateAuth(arg1) {

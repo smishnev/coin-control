@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams, useNavigate } from "react-router-dom";
-import { GetCoinIconURLs } from "../../wailsjs/go/bybit/BybitService";
+import { GetCoinIconURLs, GetCurrentPrice, StartPriceStream, StopPriceStream } from "../../wailsjs/go/main/App";
+import { EventsOn } from "../../wailsjs/runtime/runtime";
 
 const CoinDetail: React.FC = () => {
   const { coinId } = useParams<{ coinId: string }>();
@@ -10,20 +11,17 @@ const CoinDetail: React.FC = () => {
   const [iconUrl, setIconUrl] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  const handleBack = () => {
-    navigate('/bybit');
-  };
+  const [currentPrice, setCurrentPrice] = useState<string>("");
+  const [priceLoading, setPriceLoading] = useState(false);
+  const [lastUpdate, setLastUpdate] = useState<number>(0);
+  const eventUnsubscribeRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
-    if (!coinId) {
-      setError('Coin ID not provided');
-      setLoading(false);
-      return;
-    }
+    if (!coinId) return;
 
     (async () => {
       try {
+        // Fetch icon
         const icons = await GetCoinIconURLs([coinId.toUpperCase()]);
         
         if (icons && icons.length > 0) {
@@ -34,64 +32,104 @@ const CoinDetail: React.FC = () => {
             : (icon.lightUrl ?? icon.iconUrl);
           setIconUrl(chosen ?? '');
         }
+
+        // Fetch current price
+        setPriceLoading(true);
+        try {
+          const price = await GetCurrentPrice(coinId.toLowerCase());
+          setCurrentPrice(price);
+          
+          // Start WebSocket stream for real-time updates
+          await StartPriceStream(coinId.toLowerCase());
+          
+          // Listen for price updates
+          const eventName = `price-update-${coinId.toLowerCase()}`;
+          
+          const unsubscribe = EventsOn(eventName, (priceData: any) => {
+            if (priceData && typeof priceData === 'object' && priceData.price) {
+              setCurrentPrice(priceData.price);
+              setLastUpdate(Date.now());
+            } else if (typeof priceData === 'string') {
+              setCurrentPrice(priceData);
+              setLastUpdate(Date.now());
+            }
+          });
+          
+          // Store unsubscribe function for cleanup
+          eventUnsubscribeRef.current = unsubscribe;
+          
+        } catch (priceError) {
+          console.error('Failed to fetch price:', priceError);
+          setCurrentPrice('Unavailable');
+        } finally {
+          setPriceLoading(false);
+        }
+
       } catch (e: any) {
         setError(String(e));
       } finally {
         setLoading(false);
       }
     })();
+
+    // Cleanup function to stop price stream when component unmounts
+    return () => {
+      if (coinId) {
+        StopPriceStream(coinId.toLowerCase()).catch(console.error);
+        
+        // Cleanup event listener
+        if (eventUnsubscribeRef.current) {
+          eventUnsubscribeRef.current();
+        }
+      }
+    };
   }, [coinId]);
 
   if (loading) return <div>{t('Loading...')}</div>;
   if (error) return <div className="text-red-500">{error}</div>;
-  if (!coinId) return <div className="text-red-500">Coin ID not found</div>;
 
   return (
-    <div className="p-4 space-y-6">
-      {/* Breadcrumbs */}
-      <nav className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
-        <span>Bybit</span>
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-        </svg>
-        <span className="font-medium text-gray-900 dark:text-gray-100">{coinId.toUpperCase()}</span>
-      </nav>
-
-      {/* Back button */}
-      <button 
-        onClick={handleBack}
-        className="flex items-center text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
+    <div className="p-4">
+      <button
+        onClick={() => navigate(-1)}
+        className="mb-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
       >
-        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
-        {t('backToCoins')}
+        {t('Back')}
       </button>
-
-      {/* Coin header */}
-      <div className="flex items-center space-x-4">
+      
+      <div className="flex items-center mb-4">
         {iconUrl && (
-          <img 
-            src={iconUrl} 
-            alt={coinId} 
-            className="w-16 h-16"
+          <img
+            src={iconUrl}
+            alt={`${coinId} icon`}
+            className="w-16 h-16 mr-4"
           />
         )}
-        <div>
-          <h1 className="text-3xl font-bold">{coinId.toUpperCase()}</h1>
-          <p className="text-gray-600 dark:text-gray-400">Cryptocurrency</p>
-        </div>
+        <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
+          {coinId?.toUpperCase()}
+        </h1>
       </div>
-
-      {/* Price section placeholder */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-        <h2 className="text-xl font-semibold mb-4">{t('realTimePrice')}</h2>
-        <div className="text-2xl font-bold text-green-600">
-          {t('comingSoon')}
-        </div>
-        <p className="text-sm text-gray-500 mt-2">
-          {t('priceDescription')}
-        </p>
+      
+      <div className="mt-4">
+        {priceLoading ? (
+          <div className="text-gray-500">{t('Loading price...')}</div>
+        ) : (
+          <div>
+            <div className="text-2xl font-bold text-green-600">
+              {currentPrice === 'Unavailable' ? (
+                <span className="text-gray-500">Price unavailable</span>
+              ) : (
+                `$${currentPrice} USDT`
+              )}
+            </div>
+            {lastUpdate > 0 && (
+              <div className="flex items-center mt-2 text-sm text-gray-500">
+                <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
+                Live
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

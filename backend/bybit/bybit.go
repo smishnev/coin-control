@@ -42,6 +42,23 @@ func (s *BybitService) PrefetchCoinIcons(coins []string) {
 	go s.prefetchCoinIcons(coins)
 }
 
+// GetCurrentPrice gets current price for a symbol via REST API
+func (s *BybitService) GetCurrentPrice(symbol string) (string, error) {
+	return getCurrentPrice(symbol)
+}
+
+// Subscribe to real-time price updates for a symbol
+func (s *BybitService) SubscribeToPrice(symbol string) (chan PriceData, error) {
+	wsManager := GetWebSocketManager()
+	return wsManager.Subscribe(symbol)
+}
+
+// Unsubscribe from price updates
+func (s *BybitService) UnsubscribeFromPrice(symbol string, ch chan PriceData) {
+	wsManager := GetWebSocketManager()
+	wsManager.Unsubscribe(symbol, ch)
+}
+
 func (s *BybitService) CreateBybit(bybit Bybit) (string, error) {
 	ctx := context.Background()
 

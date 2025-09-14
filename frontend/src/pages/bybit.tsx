@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { FetchSpotHoldings, GetCoinIconURLs, PrefetchCoinIcons } from "../../wailsjs/go/bybit/BybitService";
+import { FetchSpotHoldings, GetCoinIconURLs, PrefetchCoinIcons } from "../../wailsjs/go/main/App";
 import { useAuth } from "../contexts/AuthContext";
 
 type Holding = { coin: string; free: string; locked: string };
