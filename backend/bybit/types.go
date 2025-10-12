@@ -23,6 +23,31 @@ type Holding struct {
 	Locked string `json:"locked"`
 }
 
+// Balance data structures
+type CoinBalance struct {
+	Coin            string `json:"coin"`
+	WalletBalance   string `json:"walletBalance"`
+	TransferBalance string `json:"transferBalance"`
+	Locked          string `json:"locked"`
+	Bonus           string `json:"bonus"`
+}
+
+type AssetInfoResponse struct {
+	RetCode int    `json:"retCode"`
+	RetMsg  string `json:"retMsg"`
+	Result  struct {
+		List []struct {
+			AccountType string `json:"accountType"`
+			Coin        []struct {
+				Coin          string `json:"coin"`
+				WalletBalance string `json:"walletBalance"`
+				Free          string `json:"free"`
+				Locked        string `json:"locked"`
+			} `json:"coin"`
+		} `json:"list"`
+	} `json:"result"`
+}
+
 // Price data structures
 type TickerPriceResponse struct {
 	RetCode int    `json:"retCode"`
@@ -221,4 +246,91 @@ func getCurrentPrice(symbol string) (string, error) {
 	}
 
 	return priceResp.Result.List[0].LastPrice, nil
+}
+
+// getAssetBalance retrieves balance for a specific coin from Bybit
+func (s *BybitService) getAssetBalance(ctx context.Context, userID string, coin string) (*CoinBalance, error) {
+	creds, err := s.GetBybitByUserId(userID)
+	if err != nil {
+		return nil, fmt.Errorf("bybit credentials not found: %w", err)
+	}
+
+	endpoint := "https://api.bybit.com/v5/account/wallet-balance"
+	recvWindow := "8000"
+	timestamp := fmt.Sprintf("%d", time.Now().UnixMilli())
+
+	// Build query parameters
+	q := url.Values{}
+	q.Set("accountType", "UNIFIED")
+	q.Set("coin", strings.ToUpper(coin))
+
+	// Create signature and make request
+	signature := signV5(creds.ApiKey, creds.ApiSecret, q, timestamp, recvWindow)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint+"?"+q.Encode(), nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("X-BAPI-API-KEY", creds.ApiKey)
+	req.Header.Set("X-BAPI-TIMESTAMP", timestamp)
+	req.Header.Set("X-BAPI-RECV-WINDOW", recvWindow)
+	req.Header.Set("X-BAPI-SIGN", signature)
+
+	client := &http.Client{Timeout: 30 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode >= 300 {
+		return nil, fmt.Errorf("bybit asset balance error: %s", string(body))
+	}
+
+	var assetResp AssetInfoResponse
+	if err := json.Unmarshal(body, &assetResp); err != nil {
+		return nil, fmt.Errorf("failed to parse asset response: %w", err)
+	}
+
+	if assetResp.RetCode != 0 {
+		return nil, fmt.Errorf("bybit error retCode=%d: %s", assetResp.RetCode, assetResp.RetMsg)
+	}
+
+	// Find the coin in the response
+	if len(assetResp.Result.List) == 0 {
+		return &CoinBalance{
+			Coin:            strings.ToUpper(coin),
+			WalletBalance:   "0",
+			TransferBalance: "0",
+			Locked:          "0",
+		}, nil
+	}
+
+	// Look for the coin in the first account
+	account := assetResp.Result.List[0]
+	for _, coinData := range account.Coin {
+		if strings.EqualFold(coinData.Coin, coin) {
+			return &CoinBalance{
+				Coin:            coinData.Coin,
+				WalletBalance:   coinData.WalletBalance,
+				TransferBalance: coinData.Free, // free balance as transferable
+				Locked:          coinData.Locked,
+				Bonus:           "0", // bonus not provided by this API
+			}, nil
+		}
+	}
+
+	// Return zero balance if coin not found
+	return &CoinBalance{
+		Coin:            strings.ToUpper(coin),
+		WalletBalance:   "0",
+		TransferBalance: "0",
+		Locked:          "0",
+		Bonus:           "0",
+	}, nil
 }

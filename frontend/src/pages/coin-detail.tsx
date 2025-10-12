@@ -1,8 +1,83 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams, useNavigate } from "react-router-dom";
-import { GetCoinIconURLs, GetCurrentPrice, StartPriceStream, StopPriceStream } from "../../wailsjs/go/main/App";
+import { GetCoinIconURLs, GetCurrentPrice, StartPriceStream, StopPriceStream, GetAssetBalance } from "../../wailsjs/go/main/App";
 import { EventsOn } from "../../wailsjs/runtime/runtime";
+import { useAuth } from "../contexts/AuthContext";
+
+type CoinBalance = { 
+  coin: string; 
+  walletBalance: string; 
+  transferBalance: string; 
+  bonus: string; 
+  locked: string
+};
+
+// Component for displaying coin balance
+const CoinBalanceSection: React.FC<{ coinSymbol: string }> = ({ coinSymbol }) => {
+  const { user: authUser } = useAuth();
+  const [balance, setBalance] = useState<CoinBalance | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!authUser || !coinSymbol) return;
+
+    (async () => {
+      try {
+        const balance = await GetAssetBalance(authUser.user_id, coinSymbol);
+        setBalance(balance || null);
+      } catch (e: any) {
+        console.error('Failed to fetch balance:', e);
+        setError(String(e));
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [authUser, coinSymbol]);
+
+  if (!authUser) return null;
+  if (loading) return <div className="text-sm text-gray-500">Loading balance...</div>;
+  if (error) return <div className="text-sm text-red-500">Failed to load balance</div>;
+  if (!balance) return <div className="text-sm text-gray-500">No balance data</div>;
+
+  const walletBalance = parseFloat(balance.walletBalance) || 0;
+  const transferBalance = parseFloat(balance.transferBalance) || 0;
+  const locked = parseFloat(balance.locked) || 0;
+  const bonus = parseFloat(balance.bonus) || 0;
+
+  return (
+    <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-md">
+      <h3 className="text-lg font-semibold mb-3">Asset Balance</h3>
+      <div className="space-y-2 text-sm">
+        <div className="flex justify-between">
+          <span className="text-gray-600 dark:text-gray-400">Wallet Balance:</span>
+          <span className="font-mono">{walletBalance.toFixed(8)} {balance.coin}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-gray-600 dark:text-gray-400">Transfer Balance:</span>
+          <span className="font-mono">{transferBalance.toFixed(8)} {balance.coin}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-gray-600 dark:text-gray-400">Locked Balance:</span>
+          <span className="font-mono text-orange-600">{locked.toFixed(8)} {balance.coin}</span>
+        </div>
+        {bonus > 0 && (
+          <div className="flex justify-between">
+            <span className="text-gray-600 dark:text-gray-400">Bonus:</span>
+            <span className="font-mono text-green-600">{bonus.toFixed(8)} {balance.coin}</span>
+          </div>
+        )}
+        <div className="border-t pt-2 mt-2">
+          <div className="flex justify-between font-medium">
+            <span>Total Available:</span>
+            <span className="font-mono">{(walletBalance + transferBalance + bonus).toFixed(8)} {balance.coin}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const CoinDetail: React.FC = () => {
   const { coinId } = useParams<{ coinId: string }>();
@@ -130,6 +205,11 @@ const CoinDetail: React.FC = () => {
             )}
           </div>
         )}
+      </div>
+
+      {/* Balance Section */}
+      <div className="mt-6">
+        <CoinBalanceSection coinSymbol={coinId || ''} />
       </div>
     </div>
   );

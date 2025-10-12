@@ -120,6 +120,11 @@ func (a *App) FetchSpotHoldings(userId string) ([]bybit.Holding, error) {
 	return a.bybitService.FetchSpotHoldings(userId)
 }
 
+// GetAssetBalance retrieves balance for a specific coin for the user
+func (a *App) GetAssetBalance(userID string, coin string) (*bybit.CoinBalance, error) {
+	return a.bybitService.GetAssetBalance(userID, coin)
+}
+
 // GetCoinIconURLs gets coin icon URLs
 func (a *App) GetCoinIconURLs(coins []string) ([]bybit.IconEntry, error) {
 	return a.bybitService.GetCoinIconURLs(coins)

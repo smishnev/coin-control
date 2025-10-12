@@ -6,6 +6,8 @@ export function CreateBybit(arg1:bybit.Bybit):Promise<string>;
 
 export function FetchSpotHoldings(arg1:string):Promise<Array<bybit.Holding>>;
 
+export function GetAssetBalance(arg1:string,arg2:string):Promise<bybit.CoinBalance>;
+
 export function GetBybitByUserId(arg1:string):Promise<bybit.Bybit>;
 
 export function GetCoinIconURLs(arg1:Array<string>):Promise<Array<bybit.IconEntry>>;

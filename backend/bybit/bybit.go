@@ -124,3 +124,8 @@ func (s *BybitService) GetBybitByUserId(userId string) (*Bybit, error) {
 	}
 	return &bybit, nil
 }
+
+// GetAssetBalance gets balance for all coins from Bybit
+func (s *BybitService) GetAssetBalance(userId string, coin string) (*CoinBalance, error) {
+	return s.getAssetBalance(context.Background(), userId, coin)
+}

@@ -241,6 +241,26 @@ export namespace bybit {
 		    return a;
 		}
 	}
+	export class CoinBalance {
+	    coin: string;
+	    walletBalance: string;
+	    transferBalance: string;
+	    locked: string;
+	    bonus: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new CoinBalance(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.coin = source["coin"];
+	        this.walletBalance = source["walletBalance"];
+	        this.transferBalance = source["transferBalance"];
+	        this.locked = source["locked"];
+	        this.bonus = source["bonus"];
+	    }
+	}
 	export class Holding {
 	    coin: string;
 	    free: string;

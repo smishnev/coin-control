@@ -24,10 +24,10 @@ const BybitForm: React.FC = () => {
     (async () => {
       try {
         const data = await FetchSpotHoldings(authUser.user_id);
-        setHoldings(data);
+        setHoldings(data || []);
 
         // Fetch icons for coins
-        const coins = Array.from(new Set(data.map(h => h.coin.toUpperCase())));
+        const coins = Array.from(new Set((data || []).map(h => h.coin.toUpperCase())));
         const icons = await GetCoinIconURLs(coins);
 
         const iconMap: Record<string,string> = {};
@@ -43,6 +43,7 @@ const BybitForm: React.FC = () => {
         // Warm local disk cache in background (no await)
         PrefetchCoinIcons(coins).catch(() => {});
       } catch (e: any) {
+        console.error('Error in useEffect:', e);
         setError(String(e));
       } finally {
         setLoading(false);
@@ -51,7 +52,7 @@ const BybitForm: React.FC = () => {
   }, [authUser]);
 
   // Filter only coins with positive balance
-  const coinsWithBalance = holdings.filter(h => {
+  const coinsWithBalance = (holdings || []).filter(h => {
     const qty = (parseFloat(h.free) || 0) + (parseFloat(h.locked) || 0);
     return qty > 0;
   });

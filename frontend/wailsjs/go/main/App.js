@@ -26,6 +26,10 @@ export function GetAllAuth() {
   return window['go']['main']['App']['GetAllAuth']();
 }
 
+export function GetAssetBalance(arg1, arg2) {
+  return window['go']['main']['App']['GetAssetBalance'](arg1, arg2);
+}
+
 export function GetAuthByID(arg1) {
   return window['go']['main']['App']['GetAuthByID'](arg1);
 }

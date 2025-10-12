@@ -10,6 +10,10 @@ export function FetchSpotHoldings(arg1) {
   return window['go']['bybit']['BybitService']['FetchSpotHoldings'](arg1);
 }
 
+export function GetAssetBalance(arg1, arg2) {
+  return window['go']['bybit']['BybitService']['GetAssetBalance'](arg1, arg2);
+}
+
 export function GetBybitByUserId(arg1) {
   return window['go']['bybit']['BybitService']['GetBybitByUserId'](arg1);
 }

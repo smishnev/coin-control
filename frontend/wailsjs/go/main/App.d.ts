@@ -15,6 +15,8 @@ export function ForgotPassword(arg1:auth.ForgotPasswordRequest):Promise<void>;
 
 export function GetAllAuth():Promise<Array<auth.Auth>>;
 
+export function GetAssetBalance(arg1:string,arg2:string):Promise<bybit.CoinBalance>;
+
 export function GetAuthByID(arg1:string):Promise<auth.Auth>;
 
 export function GetAuthByUserID(arg1:string):Promise<auth.Auth>;
