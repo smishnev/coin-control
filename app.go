@@ -3,6 +3,7 @@ package main
 import (
 	"coin-control/backend/auth"
 	"coin-control/backend/bybit"
+	"coin-control/backend/queue"
 	"context"
 	"fmt"
 	"strings"
@@ -18,6 +19,7 @@ type App struct {
 	bybitService       *bybit.BybitService
 	priceSubscriptions map[string]chan bybit.PriceData
 	priceMutex         sync.RWMutex
+	queue              *queue.Queue
 }
 
 // NewApp creates a new App application instance

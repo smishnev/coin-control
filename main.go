@@ -4,6 +4,7 @@ import (
 	"coin-control/backend/auth"
 	"coin-control/backend/bybit"
 	"coin-control/backend/database"
+	"coin-control/backend/queue"
 	"coin-control/backend/user"
 	"context"
 	"embed"
@@ -32,6 +33,11 @@ func main() {
 	userService := user.NewUserService()
 	authService := auth.NewAuthService()
 	bybitService := bybit.NewBybitService()
+
+	q := queue.NewQueue("localhost:6379")
+	q.Start()
+	q.StartScheduler()
+	app.queue = q
 
 	// Create application with options
 	err := wails.Run(&options.App{

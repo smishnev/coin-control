@@ -82,8 +82,33 @@ func (ws *WebSocketManager) connect() error {
 	ws.isConnected = true
 	ws.mu.Unlock()
 
+	// Start ping routine to keep connection alive
+	go ws.pingRoutine()
+
 	log.Printf("WebSocket connected successfully")
 	return nil
+}
+
+func (ws *WebSocketManager) pingRoutine() {
+	ticker := time.NewTicker(20 * time.Second)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ws.ctx.Done():
+			return
+		case <-ticker.C:
+			ws.mu.Lock()
+			if ws.conn != nil && ws.isConnected {
+				if err := ws.conn.WriteJSON(map[string]string{"op": "ping"}); err != nil {
+					log.Printf("Failed to send ping: %v", err)
+					ws.mu.Unlock()
+					return
+				}
+			}
+			ws.mu.Unlock()
+		}
+	}
 }
 
 func (ws *WebSocketManager) handleMessages() {
