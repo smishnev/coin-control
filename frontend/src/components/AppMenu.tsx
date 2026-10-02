@@ -27,8 +27,8 @@ const AppMenu: React.FC<AppMenuProps> = ({ activeMenu, setActiveMenu }) => {
             className={`flex items-center px-4 py-2 rounded-lg text-base font-medium transition
               ${
                 activeMenu === item.key
-                  ? 'bg-menu-active text-primary'
-                  : 'text-foreground hover:bg-menu-active'
+                  ? 'bg-menu-active text-green-500'
+                  : 'text-green-500 hover:bg-menu-active'
               }`}
           >
             {t(item.label)}
