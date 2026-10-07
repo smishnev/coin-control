@@ -28,7 +28,7 @@ const AppMenu: React.FC<AppMenuProps> = ({ activeMenu, setActiveMenu }) => {
               ${
                 activeMenu === item.key
                   ? 'bg-menu-active text-primary'
-                  : 'text-foreground hover:bg-menu-active'
+                  : 'text-red-500 hover:text-blue-500 hover:bg-menu-active'
               }`}
           >
             {t(item.label)}
